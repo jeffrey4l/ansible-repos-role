@@ -1,0 +1,28 @@
+- hosts: all
+  connection: docker
+  roles:
+    - repos
+  tasks:
+    - name: testing install tmux package
+      yum:
+        name: tmux
+        update_cache: yes
+      register: tmux_install
+    - debug:
+        msg: "{{ tmux_install.results.0.split('\n') }}"
+
+
+- hosts: all
+  connection: docker
+  pre_tasks:
+    - package: name=epel-release
+  roles:
+    - repos
+
+  tasks:
+    - name: testing install collectd package
+      yum:
+        name: collectd
+        update_cache: yes
+      register: collectd_install
+    - debug: "msg={{ collectd_install.results.0.split('\n') }}"

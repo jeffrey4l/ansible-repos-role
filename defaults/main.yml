@@ -1,0 +1,12 @@
+prefered_site: aliyun
+
+base_url_sites:
+  - name: 163
+    location: china
+    url: http://mirrors.163.com/centos
+  - name: aliyun
+    location: china
+    url: http://mirrors.aliyun.com/centos
+    epel_url: https://mirrors.aliyun.com/epel
+
+base_url: "{{ base_url_sites | selectattr('name', 'equalto', prefered_site) | first }}"
