@@ -1,0 +1,38 @@
+- name: checking 
+  stat:
+    path: /etc/yum.repos.d/CentOS-OpenShift-Origin.repo
+  register: openshift_repo
+
+- name: configure CentOS-OpenShift-Origin.repo
+  yum_repository:
+    name: "{{ item.name }}"
+    file: CentOS-OpenShift-Origin
+    baseurl: "{{ item.baseurl }}"
+    gpgkey: "{{ item.gpgkey }}"
+    description: "{{ item.description }}"
+  with_items:
+    - name: centos-openshift-origin
+      description: CentOS OpenShift Origin
+      baseurl: "{{ base_url.url }}/7/paas/x86_64/openshift-origin/"
+      enabled: yes
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-PaaS
+
+    - name: centos-openshift-origin-testing
+      description: CentOS OpenShift Origin Testing
+      baseurl: "http://buildlogs.centos.org/centos/7/paas/x86_64/openshift-origin/"
+      enabled: no
+      gpgkey: file:///etc/pki/rpm-gpg/openshift-ansible-CentOS-SIG-PaaS
+
+    - name: centos-openshift-origin-debuginfo
+      description: CentOS OpenShift Origin DebugInfo
+      baseurl: http://debuginfo.centos.org/centos/7/paas/x86_64/
+      enable: no
+      gpgkey: file:///etc/pki/rpm-gpg/openshift-ansible-CentOS-SIG-PaaS
+
+    - name: centos-openshift-origin-source
+      description: CentOS OpenShift Origin Source
+      baseurl: http://vault.centos.org/centos/7/paas/Source/openshift-origin/
+      enable: no
+      gpgkey: file:///etc/pki/rpm-gpg/openshift-ansible-CentOS-SIG-PaaS
+  when:
+    - openshift_repo.stat.exists

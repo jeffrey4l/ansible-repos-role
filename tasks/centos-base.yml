@@ -1,0 +1,29 @@
+- name: checking whether CentOS-Base.repo exist
+  stat:
+    path: /etc/yum.repos.d/CentOS-Base.repo
+  register: centos_base_repo
+
+- name: configure CentOS-Base.repo
+  yum_repository:
+    name: "{{ item.name }}"
+    file: CentOS-Base
+    baseurl: "{{ base_url.url }}/$releasever/{{ item.url_prefix | default(item.name) }}/$basearch/"
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+    gpgcheck: yes
+    enabled: "{{ item.enabled | default('yes') }}"
+    description: "CentOS-$releasever - {{ item.name.capitalize() }}"
+  with_items:
+    - name: base
+      url_prefix: os
+    - name: updates
+    - name: extras
+    - name: centosplus
+      enabled: no
+  when:
+    - centos_base_repo.stat.exists
+
+- name: importing RPM-GPG-KEY-CentOS-7
+  rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+  when:
+    - centos_base_repo.stat.exists

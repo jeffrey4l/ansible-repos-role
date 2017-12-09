@@ -16,6 +16,7 @@
   connection: docker
   pre_tasks:
     - package: name=epel-release
+    - package: name=centos-release-openshift-origin36
   roles:
     - repos
 

@@ -1,0 +1,32 @@
+- name: checking whether epel.repo exists
+  stat:
+    path: /etc/yum.repos.d/epel.repo
+  register: epel_repo
+      
+- name: importing RPM-GPG-KEY-EPEL-7
+  rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+  when:
+    - epel_repo.stat.exists
+
+- name: configuring epel.repo
+  yum_repository:
+    name: "{{ item.name }}"
+    file: epel
+    description: "Extra Packages for Enterprise Linux 7 - $basearch{{ ' - ' + item.description_suffix if item.description_suffix else '' }}"
+    baseurl: "{{ base_url.epel_url }}/$releasever/$basearch"
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7
+    gpgcheck: yes
+    enabled: "{{ item.enabled }}"
+  with_items:
+    - name: epel
+      description_suffix: null
+      enabled: yes
+    - name: epel-debuginfo
+      description_suffix: Debuginfo
+      enabled: no
+    - name: epel-source
+      description_suffix: Source
+      enabled: no
+  when:
+    - epel_repo.stat.exists

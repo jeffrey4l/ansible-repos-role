@@ -2,7 +2,14 @@
 
 set -ex
 
-CUR_DIR=$(dirname $0)
+ME=$(readlink -f $0)
+CUR_DIR=$(dirname $ME)
+
+ROLE_PATH=$(readlink -f $CUR_DIR/../..)
+
+export ANSIBLE_ROLES_PATH=$ROLE_PATH
+
+echo "ANISBLE_ROLES_PATH=$ANSIBLE_ROLES_PATH"
 
 container_name=$(docker run -d centos:7 sleep infinity)
 
